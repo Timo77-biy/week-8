@@ -1,0 +1,109 @@
+# Base class for Books
+class Book:
+    def __init__(self, title, author, pages):
+        self._title = title  # Protected attribute for encapsulation
+        self._author = author
+        self._pages = pages
+        self._is_open = False
+
+    # Getter for title and author
+    @property
+    def description(self):
+        return f"{self._title} by {self._author}"
+
+    # Setter for pages with validation
+    @property
+    def pages(self):
+        return self._pages
+
+    @pages.setter
+    def pages(self, value):
+        if value <= 0:
+            raise ValueError("Number of pages must be positive")
+        self._pages = value
+
+    # Method to toggle book open/closed status
+    def toggle_open(self):
+        self._is_open = not self._is_open
+        return f"{self._title} is now {'open' if self._is_open else 'closed'}"
+
+    # Abstract-like method for polymorphism
+    def read(self):
+        raise NotImplementedError("Subclasses must implement read()")
+
+    def __str__(self):
+        return f"Book: {self.description}, {self._pages} pages"
+
+
+# Derived class for PhysicalBook
+class PhysicalBook(Book):
+    def __init__(self, title, author, pages, cover_type):
+        super().__init__(title, author, pages)
+        self._cover_type = cover_type
+
+    def read(self):
+        return f"Flipping through the {self._cover_type} cover of {self.description}! 📖"
+
+    def __str__(self):
+        return f"{super().__str__()}, Cover: {self._cover_type}"
+
+
+# Derived class for EBook
+class EBook(Book):
+    def __init__(self, title, author, pages, file_size_mb):
+        super().__init__(title, author, pages)
+        self._file_size_mb = file_size_mb
+
+    def read(self):
+        return f"Swiping through {self.description} on a digital screen! 📱"
+
+    def __str__(self):
+        return f"{super().__str__()}, File Size: {self._file_size_mb} MB"
+
+
+# Derived class for AudioBook
+class AudioBook(Book):
+    def __init__(self, title, author, pages, duration_hours):
+        super().__init__(title, author, pages)
+        self._duration_hours = duration_hours
+
+    def read(self):
+        return f"Listening to {self.description} for {self._duration_hours} hours! 🎧"
+
+    def __str__(self):
+        return f"{super().__str__()}, Duration: {self._duration_hours} hours"
+
+
+# Demonstration program
+def main():
+    # Create instances of different book types
+    novel = PhysicalBook("Pride and Prejudice", "Jane Austen", 432, "Hardcover")
+    ebook = EBook("1984", "George Orwell", 328, 2.5)
+    audiobook = AudioBook("Dune", "Frank Herbert", 688, 21.0)
+
+    # Store books in a list to demonstrate polymorphism
+    books = [novel, ebook, audiobook]
+
+    # Display book details and their reading methods
+    print("Library Collection:")
+    for book in books:
+        print(f"- {book}")
+        print(f"  Reading: {book.read()}")
+        print(f"  Status: {book.toggle_open()}")
+        print()
+
+    # Demonstrate setter with valid and invalid inputs
+    try:
+        novel.pages = 450
+        print(f"Updated {novel.description} to {novel.pages} pages")
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    try:
+        ebook.pages = -10
+    except ValueError as e:
+        print(f"Error updating {ebook.description}: {e}")
+
+
+if __name__ == "__main__":
+    main()
